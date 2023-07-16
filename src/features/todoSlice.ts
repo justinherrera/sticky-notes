@@ -1,40 +1,38 @@
-import { createSlice } from "@reduxjs/toolkit"
-import { v4 as uuid } from 'uuid';
-import type { PayloadAction } from '@reduxjs/toolkit'
-
-interface Todo {
-  id: number
-  title: string
-  body: string  
-}
+import { createSlice, current } from "@reduxjs/toolkit";
+import { v4 as uuid } from "uuid";
+import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface TodoPayload {
+  id: string;
   title: string;
-  body: string;
 }
-
 
 const todoSlice = createSlice({
   name: "todo",
   initialState: [] as TodoPayload[],
   reducers: {
     create: {
-      prepare(title: string, body: string) {
+      prepare(title: string) {
         return {
           payload: {
             id: uuid(),
             title,
-            body,
-          }
-        }
+          },
+        };
       },
       reducer(state, action: PayloadAction<TodoPayload>) {
-        console.log(action.payload)
-        state.push(action.payload)
+        console.log(action.payload);
+        state.push(action.payload);
       },
-    }
-  }
-})
+    },
+    deleteOne: (state, action: PayloadAction<string>) => {
+      return state.filter((todo) => todo.id !== action.payload);
+    },
+    clear: (state) => {
+      return [];
+    },
+  },
+});
 
-export const { create }  = todoSlice.actions
-export default todoSlice.reducer
+export const { create, deleteOne, clear } = todoSlice.actions;
+export default todoSlice.reducer;
