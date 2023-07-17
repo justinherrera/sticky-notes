@@ -1,4 +1,4 @@
-import { createSlice, current } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { v4 as uuid } from "uuid";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
@@ -28,17 +28,13 @@ const todoSlice = createSlice({
     deleteOne: (state, action: PayloadAction<string>) => {
       return state.filter((todo) => todo.id !== action.payload);
     },
-    updateOne: (state, action) => {
-      console.log(action.payload);
-      console.log(current(state));
+    updateOne: (state, action: PayloadAction<TodoPayload>) => {
       const todoIndex = state.findIndex(
         (todo) => todo.id === action.payload.id
       );
-      console.log(todoIndex);
       if (todoIndex !== -1) {
-        // state[todoIndex] = { ...state[todoIndex], ...updatedUser };
-        console.log(current(state[todoIndex]));
         state[todoIndex] = action.payload;
+        return state;
       }
     },
     clear: () => {

@@ -27,9 +27,10 @@ type Inputs = {
 const Form = () => {
   const [editMode, setEditMode] = useState(false);
   const [editForm, setEditForm] = useState({});
+  const [currentEditItem, setCurrentEditItem] = useState("");
   const todos: Todo[] = useSelector((store: Store) => store.todos);
   const dispatch = useDispatch();
-  const { register, handleSubmit, reset, setValue, getValues } =
+  const { register, handleSubmit, reset, setValue, getValues, watch } =
     useForm<Inputs>();
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
@@ -47,15 +48,16 @@ const Form = () => {
           {...register("title")}
           className="p-1 border border-blue-500 rounded focus:outline-none"
         />
-        {console.log(editForm)}
         <button type="submit">
           {editMode ? (
             <CheckCircleIcon
               onClick={(e) => {
                 e.preventDefault();
-                const { id, title } = editForm as Todo;
+                const { id } = editForm as Todo;
+                const { title } = getValues();
                 dispatch(updateOne({ id, title }));
-                console.log(editForm);
+                reset({ title: "" });
+                setEditMode(!editMode);
               }}
               className="h-6 w-6 mt-2 text-blue-500 cursor-pointer "
             />
@@ -96,9 +98,9 @@ const Form = () => {
               <PencilIcon
                 onClick={
                   () => {
+                    setEditForm({ id: todo.id, title: getValues().title });
                     setValue("title", todo.title);
                     setEditMode(!editMode);
-                    setEditForm({ id: todo.id, title: getValues().title });
                   }
                   // dispatch(updateOne({ id: todo.id, title: todo.title }))
                 }
