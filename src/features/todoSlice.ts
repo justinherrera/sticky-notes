@@ -28,11 +28,24 @@ const todoSlice = createSlice({
     deleteOne: (state, action: PayloadAction<string>) => {
       return state.filter((todo) => todo.id !== action.payload);
     },
-    clear: (state) => {
+    updateOne: (state, action) => {
+      console.log(action.payload);
+      console.log(current(state));
+      const todoIndex = state.findIndex(
+        (todo) => todo.id === action.payload.id
+      );
+      console.log(todoIndex);
+      if (todoIndex !== -1) {
+        // state[todoIndex] = { ...state[todoIndex], ...updatedUser };
+        console.log(current(state[todoIndex]));
+        state[todoIndex] = action.payload;
+      }
+    },
+    clear: () => {
       return [];
     },
   },
 });
 
-export const { create, deleteOne, clear } = todoSlice.actions;
+export const { create, deleteOne, updateOne, clear } = todoSlice.actions;
 export default todoSlice.reducer;

@@ -2,8 +2,13 @@ import { motion, Reorder } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
-import { create, deleteOne, clear } from "../../features/todoSlice";
-import { PlusCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
+import { create, deleteOne, updateOne, clear } from "../../features/todoSlice";
+import {
+  PlusCircleIcon,
+  XCircleIcon,
+  PencilIcon,
+  CheckCircleIcon,
+} from "@heroicons/react/24/solid";
 import "../../Form.css";
 
 interface Todo {
@@ -20,9 +25,12 @@ type Inputs = {
 };
 
 const Form = () => {
+  const [editMode, setEditMode] = useState(false);
+  const [editForm, setEditForm] = useState({});
   const todos: Todo[] = useSelector((store: Store) => store.todos);
   const dispatch = useDispatch();
-  const { register, handleSubmit, reset } = useForm<Inputs>();
+  const { register, handleSubmit, reset, setValue, getValues } =
+    useForm<Inputs>();
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     reset({ title: "" });
@@ -39,9 +47,21 @@ const Form = () => {
           {...register("title")}
           className="p-1 border border-blue-500 rounded focus:outline-none"
         />
-
+        {console.log(editForm)}
         <button type="submit">
-          <PlusCircleIcon className="h-6 w-6 text-blue-500 cursor-pointer " />
+          {editMode ? (
+            <CheckCircleIcon
+              onClick={(e) => {
+                e.preventDefault();
+                const { id, title } = editForm as Todo;
+                dispatch(updateOne({ id, title }));
+                console.log(editForm);
+              }}
+              className="h-6 w-6 mt-2 text-blue-500 cursor-pointer "
+            />
+          ) : (
+            <PlusCircleIcon className="h-6 w-6 text-blue-500 cursor-pointer " />
+          )}
         </button>
         <button
           onClick={(e) => {
@@ -71,6 +91,20 @@ const Form = () => {
               onClick={() => dispatch(deleteOne(todo.id))}
               className="h-6 w-6 mt-2 text-blue-500 cursor-pointer "
             />
+
+            <div className="h-6 w-6 mt-2 bg-blue-500 rounded-2xl flex justify-center items-center">
+              <PencilIcon
+                onClick={
+                  () => {
+                    setValue("title", todo.title);
+                    setEditMode(!editMode);
+                    setEditForm({ id: todo.id, title: getValues().title });
+                  }
+                  // dispatch(updateOne({ id: todo.id, title: todo.title }))
+                }
+                className="h-3 w-3 text-white cursor-pointer "
+              />
+            </div>
           </motion.div>
         ))}
       </div>
